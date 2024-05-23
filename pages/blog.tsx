@@ -1,62 +1,74 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
 import styles from "@/styles/Home.module.css";
 import Link from 'next/link';
 
+type Blog = {
+  slug: string;
+  title: string;
+  author: string;
+  content: string;
+};
 
-const Blog = () => {
+const BlogComponent = () => {
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+  
+  useEffect(() => {
+    fetch("http://localhost:3000/api/blog")
+      .then((response) => response.json())
+      .then((parsed: Blog[]) => { // Parse the response as an array of Blog objects
+        console.log(parsed);
+        setBlogs(parsed);
+      });
+  }, []);
+
   return (
     <>
-  <style jsx>
-    {
-      `
-      .customBlogs{
-        display:flex;
-        justify-content:center;
-        flex-direction:column;
-        height:100vh;
-      }
-      .customBlog{
-        width: 100%;
-        text-align: center;
-      }
-      h2{
-        font-size:28px;
-      }
-      h3{
-        font-size:24px
-      }
-      p{
-        font-size:18px;
-      }
-      `
-    }
-
-  </style>
-
-     <div className={`${styles.blogs} customBlogs`}>
-          <h2>Popular Blogs</h2>
-          <div className={`${styles.blogitem} customBlog`}>
+      <style jsx>
+        {`
+          .customBlogs {
+            margin-top:40px;
+            height:100vh;\
+          }
+          .customBlog {
+            margin-top:20px;
+            text-align: center;
+          }
+          h4 {
+            font-size: 24px;
+            margin-top:10px;
+          }
+          h3 {
+            font-size: 28px;
+            margin-top:10px;
+          }
+          p {
+            font-size: 18px;
+            width:45%;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            margin: 0px auto;
+            margin-top:5px;
             
-            <Link href={"./blogpost/learn-java-script"}>
-            <h3>How to Learn Javascript in 2027</h3>
+          }
+        `}
+      </style>
+      
+      <div className={`${styles.blogs} customBlogs`}>
+        <h2>Popular Blogs</h2>
+        {blogs.map((blog, index) => (
+          <div key={index} className={`${styles.blogitem} customBlog`}>
+            <Link href={`./blogpost/${blog.slug}`}>
+              <h3>{blog.title}</h3>
             </Link>
-            <p>JavaScript is asynchronous Language and it is Logics Base </p>
-          </div>
-          <div className={`${styles.blogitem} customBlog`}>
-            <h3>How to Learn Javascript in 2027</h3>
-            <p>JavaScript is asynchronous Language and it is Logics Base </p>
-          </div>
-          <div className={`${styles.blogitem} customBlog`}>
-            <h3>How to Learn Javascript in 2027</h3>
-            <p>JavaScript is asynchronous Language and it is Logics Base </p>
-          </div>
-          <div className={`${styles.blogitem} customBlog`}>
-            <h3>How to Learn Javascript in 2027</h3>
-            <p>JavaScript is asynchronous Language and it is Logics Base </p>
-          </div>
-        </div>
-    </>
-  )
-}
+            <h4>{blog.author}</h4>
+            <p>{blog.content.length > 140 ? blog.content.substring(0, 140) + '...' : blog.content}</p>
 
-export default Blog
+          </div>
+        ))}
+      </div>
+    </>
+  );
+};
+
+export default BlogComponent;
