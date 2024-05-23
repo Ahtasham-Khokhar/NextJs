@@ -7,20 +7,13 @@ type Blog = {
   title: string;
   author: string;
   content: string;
+  allblogs: Blog[];
 };
 
-const BlogComponent = () => {
-  const [blogs, setBlogs] = useState<Blog[]>([]);
+const BlogComponent = ({allblogs}:Blog) => {
+  const [blogs, setBlogs] = useState<Blog[]>(allblogs);
   
-  useEffect(() => {
-    fetch("http://localhost:3000/api/blog")
-      .then((response) => response.json())
-      .then((parsed: Blog[]) => { // Parse the response as an array of Blog objects
-        console.log(parsed);
-        setBlogs(parsed);
-      });
-  }, []);
-
+ 
   return (
     <>
       <style jsx>
@@ -70,5 +63,15 @@ const BlogComponent = () => {
     </>
   );
 };
+
+//Server Side Rendering
+export async function getServerSideProps() {
+  // Fetch data from external API
+  
+   const data = await fetch("http://localhost:3000/api/blog")
+    const allblogs =await data.json()
+  // Pass data to the page via props
+  return { props: { allblogs} }
+}
 
 export default BlogComponent;
